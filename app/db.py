@@ -83,7 +83,7 @@ class StarSystem(SQLModel, table=True):
     z: float = 0.0
     description: str = ""
 
-    locations: List["Location"] = Relationship(back_populates="system")  # defined later
+    locations: List[Location] = Relationship(back_populates="system")  # defined later
 
 class Location(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
@@ -94,8 +94,8 @@ class Location(SQLModel, table=True):
     description: str = ""
     image_path: str = ""
 
-    system: Optional["StarSystem"] = Relationship(back_populates="locations")
-    features: List["Feature"] = Relationship(back_populates="location")
+    system: Optional[StarSystem] = Relationship(back_populates="locations")
+    features: List[Feature] = Relationship(back_populates="location")
 
     __table_args__ = (
         UniqueConstraint("system_id", "ordinal", name="uix_location_system_ordinal"),
@@ -116,8 +116,8 @@ class Feature(SQLModel, table=True):
     discovered_turn: int = 0
     meta: Dict = Field(default_factory=dict, sa_column=Column(JSON) if JSON else None)
 
-    location: Optional["Location"] = Relationship(back_populates="features")
-    plot: Optional["Plot"] = Relationship(back_populates="feature", sa_relationship_kwargs={"uselist": False})
+    location: Optional[Location] = Relationship(back_populates="features")
+    plot: Optional[Plot] = Relationship(back_populates="feature", sa_relationship_kwargs={"uselist": False})
 
 # -----------------------------
 # Plots & deeds & surveys
@@ -128,10 +128,10 @@ class Plot(SQLModel, table=True):
     size_hectares: float = 1.0
     quality: int = 0  # abstract quality score 0–100
 
-    feature: Optional["Feature"] = Relationship(back_populates="plot")
-    deed: Optional["Deed"] = Relationship(back_populates="plot", sa_relationship_kwargs={"uselist": False})
-    materials: List["PlotMaterial"] = Relationship(back_populates="plot")
-    surveys: List["PlotSurvey"] = Relationship(back_populates="plot")
+    feature: Optional[Feature] = Relationship(back_populates="plot")
+    deed: Optional[Deed] = Relationship(back_populates="plot", sa_relationship_kwargs={"uselist": False})
+    materials: List[PlotMaterial] = Relationship(back_populates="plot")
+    surveys: List[PlotSurvey] = Relationship(back_populates="plot")
 
 class Deed(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
