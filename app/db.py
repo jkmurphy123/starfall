@@ -17,7 +17,9 @@ from sqlmodel import (
     create_engine,
     select,
 )
-from sqlalchemy import Column, UniqueConstraint, Mapped, mapped_column, relationship
+from sqlalchemy import Column, UniqueConstraint
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+
 try:
     from sqlalchemy import JSON  # SA>=1.4 has JSON (mapped to TEXT on SQLite)
 except Exception:  # pragma: no cover
