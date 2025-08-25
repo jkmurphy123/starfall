@@ -24,6 +24,7 @@ from sqlmodel import Relationship as SQLMRelationship
 #    from sqlalchemy import JSON  # SA>=1.4 has JSON (mapped to TEXT on SQLite)
 #except Exception:  # pragma: no cover
 #    JSON = None  # type: ignore
+JSON = None
 
 # -----------------------------
 # Enums
