@@ -75,19 +75,6 @@ def to_roman(n: int) -> str:
 # -----------------------------
 # Core game entities
 # -----------------------------
-class Player(SQLModel, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True)
-    name: str = Field(index=True, unique=True)
-    credits: int = 0
-    created_at: datetime = Field(default_factory=datetime.utcnow)
-
-    # Relationships
-    deeds: List["Deed"] = Relationship(back_populates="owner")  # defined later
-    inventory: List["PlayerMaterial"] = Relationship(back_populates="player")
-    technologies: List["PlayerTechnology"] = Relationship(back_populates="player")
-    assessments: List["LocationAssessment"] = Relationship(back_populates="player")
-    surveys: List["PlotSurvey"] = Relationship(back_populates="player")
-
 class StarSystem(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     name: str = Field(index=True, unique=True)
@@ -240,8 +227,8 @@ class PlayerMaterial(SQLModel, table=True):
     material_id: int = Field(foreign_key="material.id", index=True)
     quantity: float = 0.0
 
-    player: Optional["Player"] = Relationship(back_populates="inventory")
-    material: Optional["Material"] = Relationship()
+    player: Optional[Player] = Relationship(back_populates="inventory")
+    material: Optional[Material] = Relationship()
 
 # -----------------------------
 # Knowledge capture
@@ -255,8 +242,21 @@ class LocationAssessment(SQLModel, table=True):
     details_text: str = ""  # full description (possibly LLM generated)
     data: Dict = Field(default_factory=dict, sa_column=Column(JSON) if JSON else None)  # structured extras
 
-    location: Optional["Location"] = Relationship()
-    player: Optional["Player"] = Relationship(back_populates="assessments")
+    location: Optional[Location] = Relationship()
+    player: Optional[Player] = Relationship(back_populates="assessments")
+
+class Player(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    name: str = Field(index=True, unique=True)
+    credits: int = 0
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+    # Relationships
+    deeds: List[Deed] = Relationship(back_populates="owner")  # defined later
+    inventory: List[PlayerMaterial] = Relationship(back_populates="player")
+    technologies: List[PlayerTechnology] = Relationship(back_populates="player")
+    assessments: List[LocationAssessment] = Relationship(back_populates="player")
+    surveys: List[PlotSurvey] = Relationship(back_populates="player")
 
 # -----------------------------
 # Projects & Tasks (player guide)
