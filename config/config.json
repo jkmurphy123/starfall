@@ -35,7 +35,7 @@
         },
         {
             "id": "comms",
-            "title": "Comms",
+            "title": "Command Console",
             "row": 1,
             "col": 0,
             "bg": "#14202d",
