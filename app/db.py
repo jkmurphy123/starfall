@@ -4,7 +4,7 @@ Covers: players, assets (materials, technologies), star systems, locations,
 features (incl. plots, establishments, ruins, artifacts, POIs), assessments,
 plot surveys, deeds, Projects & Tasks, and helpers for engine/session creation.
 """
-from __future__ import annotations
+#from __future__ import annotations
 from enum import Enum
 from datetime import datetime
 from typing import Optional, Dict, List
@@ -18,12 +18,12 @@ from sqlmodel import (
 )
 from sqlmodel import Relationship as SQLMRelationship
 
-#from sqlalchemy import Column, UniqueConstraint
+from sqlalchemy import Column, UniqueConstraint
 
-#try:
-#    from sqlalchemy import JSON  # SA>=1.4 has JSON (mapped to TEXT on SQLite)
-#except Exception:  # pragma: no cover
-#    JSON = None  # type: ignore
+try:
+    from sqlalchemy import JSON  # SA>=1.4 has JSON (mapped to TEXT on SQLite)
+except Exception:  # pragma: no cover
+    JSON = None  # type: ignore
 
 # -----------------------------
 # Enums
@@ -111,9 +111,9 @@ class Location(SQLModel, table=True):
     system: Optional["StarSystem"] = SQLMRelationship(back_populates="locations")
     features: List["Feature"] = SQLMRelationship(back_populates="location")
 
-    #__table_args__ = (
-    #    UniqueConstraint("system_id", "ordinal", name="uix_location_system_ordinal"),
-    #)
+    __table_args__ = (
+        UniqueConstraint("system_id", "ordinal", name="uix_location_system_ordinal"),
+    )
 
     @property
     def display_name(self) -> str:
@@ -128,7 +128,7 @@ class Feature(SQLModel, table=True):
     name: str = ""  # e.g., "Trading Post", "Obelisk A", "North Ridge"
     description: str = ""
     discovered_turn: int = 0
-    #meta: Dict = Field(default_factory=dict, sa_column=Column(JSON) if JSON else None)
+    meta: Dict = Field(default_factory=dict, sa_column=Column(JSON) if JSON else None)
 
     location: Optional["Location"] = SQLMRelationship(back_populates="features")
     plot: Optional["Plot"] = SQLMRelationship(back_populates="feature", sa_relationship_kwargs={"uselist": False})
@@ -234,7 +234,7 @@ class PlayerTechnology(SQLModel, table=True):
 # Player inventory (materials)
 # -----------------------------
 class PlayerMaterial(SQLModel, table=True):
-    #__table_args__ = (UniqueConstraint("player_id", "material_id", name="uix_player_material"),)
+    __table_args__ = (UniqueConstraint("player_id", "material_id", name="uix_player_material"),)
 
     id: Optional[int] = Field(default=None, primary_key=True)
     player_id: int = Field(foreign_key="player.id", index=True)
@@ -254,7 +254,7 @@ class LocationAssessment(SQLModel, table=True):
     created_at: datetime = Field(default_factory=datetime.utcnow)
     summary: str = ""
     details_text: str = ""  # full description (possibly LLM generated)
-    #data: Dict = Field(default_factory=dict, sa_column=Column(JSON) if JSON else None)  # structured extras
+    data: Dict = Field(default_factory=dict, sa_column=Column(JSON) if JSON else None)  # structured extras
 
     location: Optional["Location"] = SQLMRelationship()
     player: Optional["Player"] = SQLMRelationship(back_populates="assessments")
@@ -282,9 +282,9 @@ class Task(SQLModel, table=True):
 
     project: Optional["Project"] = SQLMRelationship(back_populates="tasks")
 
-    #__table_args__ = (
-    #    UniqueConstraint("project_id", "key", name="uix_task_proj_key"),
-    #)
+    __table_args__ = (
+        UniqueConstraint("project_id", "key", name="uix_task_proj_key"),
+    )
 
 # -----------------------------
 # Engine / session helpers
