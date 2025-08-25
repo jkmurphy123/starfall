@@ -27,7 +27,7 @@ class MainWindow(QMainWindow):
         self.cfg = cfg
         self.bus = EventBus()
         self.state = GameState()
-        self.controller = MainController(self.state, self.bus)
+        self.controller = MainController(self.state, self.bus, cfg)
 
         # Status bar shows turn + focus
         self.status = QStatusBar()
