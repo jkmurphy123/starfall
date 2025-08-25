@@ -12,11 +12,12 @@ from typing import Optional, Dict, List
 from sqlmodel import (
     SQLModel,
     Field,
-    Relationship,
     Session,
     create_engine,
     select,
 )
+from sqlmodel import Relationship as SQLMRelationship
+
 from sqlalchemy import Column, UniqueConstraint
 
 try:
@@ -75,6 +76,19 @@ def to_roman(n: int) -> str:
 # -----------------------------
 # Core game entities
 # -----------------------------
+class Player(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    name: str = Field(index=True, unique=True)
+    credits: int = 0
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+    # Relationships
+    deeds: List["Deed"] = SQLMRelationship(back_populates="owner")  # defined later
+    inventory: List["PlayerMaterial"] = SQLMRelationship(back_populates="player")
+    technologies: List["PlayerTechnology"] = SQLMRelationship(back_populates="player")
+    assessments: List["LocationAssessment"] = SQLMRelationship(back_populates="player")
+    surveys: List["PlotSurvey"] = SQLMRelationship(back_populates="player")
+
 class StarSystem(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     name: str = Field(index=True, unique=True)
@@ -83,7 +97,7 @@ class StarSystem(SQLModel, table=True):
     z: float = 0.0
     description: str = ""
 
-    locations: List[Location] = Relationship(back_populates="system")  # defined later
+    locations: List["Location"] = SQLMRelationship(back_populates="system")  # defined later
 
 class Location(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
@@ -94,8 +108,8 @@ class Location(SQLModel, table=True):
     description: str = ""
     image_path: str = ""
 
-    system: Optional[StarSystem] = Relationship(back_populates="locations")
-    features: List[Feature] = Relationship(back_populates="location")
+    system: Optional["StarSystem"] = SQLMRelationship(back_populates="locations")
+    features: List["Feature"] = SQLMRelationship(back_populates="location")
 
     __table_args__ = (
         UniqueConstraint("system_id", "ordinal", name="uix_location_system_ordinal"),
@@ -116,8 +130,8 @@ class Feature(SQLModel, table=True):
     discovered_turn: int = 0
     meta: Dict = Field(default_factory=dict, sa_column=Column(JSON) if JSON else None)
 
-    location: Optional[Location] = Relationship(back_populates="features")
-    plot: Optional[Plot] = Relationship(back_populates="feature", sa_relationship_kwargs={"uselist": False})
+    location: Optional["Location"] = SQLMRelationship(back_populates="features")
+    plot: Optional["Plot"] = SQLMRelationship(back_populates="feature", sa_relationship_kwargs={"uselist": False})
 
 # -----------------------------
 # Plots & deeds & surveys
@@ -128,10 +142,10 @@ class Plot(SQLModel, table=True):
     size_hectares: float = 1.0
     quality: int = 0  # abstract quality score 0–100
 
-    feature: Optional[Feature] = Relationship(back_populates="plot")
-    deed: Optional[Deed] = Relationship(back_populates="plot", sa_relationship_kwargs={"uselist": False})
-    materials: List[PlotMaterial] = Relationship(back_populates="plot")
-    surveys: List[PlotSurvey] = Relationship(back_populates="plot")
+    feature: Optional["Feature"] = SQLMRelationship(back_populates="plot")
+    deed: Optional["Deed"] = SQLMRelationship(back_populates="plot", sa_relationship_kwargs={"uselist": False})
+    materials: List["PlotMaterial"] = SQLMRelationship(back_populates="plot")
+    surveys: List["PlotSurvey"] = SQLMRelationship(back_populates="plot")
 
 class Deed(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
@@ -141,8 +155,8 @@ class Deed(SQLModel, table=True):
     price: int = 0
     notes: str = ""
 
-    plot: Optional["Plot"] = Relationship(back_populates="deed")
-    owner: Optional["Player"] = Relationship(back_populates="deeds")
+    plot: Optional["Plot"] = SQLMRelationship(back_populates="deed")
+    owner: Optional["Player"] = SQLMRelationship(back_populates="deeds")
 
 class Material(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
@@ -151,8 +165,8 @@ class Material(SQLModel, table=True):
     unit: str = "kg"
     description: str = ""
 
-    plot_links: List["PlotMaterial"] = Relationship(back_populates="material")
-    recipe_links: List["TechRecipeItem"] = Relationship(back_populates="material")
+    plot_links: List["PlotMaterial"] = SQLMRelationship(back_populates="material")
+    recipe_links: List["TechRecipeItem"] = SQLMRelationship(back_populates="material")
 
 class PlotMaterial(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
@@ -160,8 +174,8 @@ class PlotMaterial(SQLModel, table=True):
     material_id: int = Field(foreign_key="material.id", index=True)
     quantity: float = 0.0  # in material.unit
 
-    plot: Optional["Plot"] = Relationship(back_populates="materials")
-    material: Optional["Material"] = Relationship(back_populates="plot_links")
+    plot: Optional["Plot"] = SQLMRelationship(back_populates="materials")
+    material: Optional["Material"] = SQLMRelationship(back_populates="plot_links")
 
 class PlotSurvey(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
@@ -171,9 +185,9 @@ class PlotSurvey(SQLModel, table=True):
     confidence: int = 75  # 0–100
     notes: str = ""
 
-    plot: Optional["Plot"] = Relationship(back_populates="surveys")
-    player: Optional["Player"] = Relationship(back_populates="surveys")
-    materials: List["PlotSurveyMaterial"] = Relationship(back_populates="survey")
+    plot: Optional["Plot"] = SQLMRelationship(back_populates="surveys")
+    player: Optional["Player"] = SQLMRelationship(back_populates="surveys")
+    materials: List["PlotSurveyMaterial"] = SQLMRelationship(back_populates="survey")
 
 class PlotSurveyMaterial(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
@@ -182,8 +196,8 @@ class PlotSurveyMaterial(SQLModel, table=True):
     estimated_qty: float = 0.0
     grade: str = ""  # freeform (e.g., "high purity", "trace")
 
-    survey: Optional["PlotSurvey"] = Relationship(back_populates="materials")
-    material: Optional["Material"] = Relationship()
+    survey: Optional["PlotSurvey"] = SQLMRelationship(back_populates="materials")
+    material: Optional["Material"] = SQLMRelationship()
 
 # -----------------------------
 # Technology & crafting
@@ -195,7 +209,7 @@ class Technology(SQLModel, table=True):
     description: str = ""
     image_path: str = ""
 
-    recipe_items: List["TechRecipeItem"] = Relationship(back_populates="technology")
+    recipe_items: List["TechRecipeItem"] = SQLMRelationship(back_populates="technology")
 
 class TechRecipeItem(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
@@ -203,8 +217,8 @@ class TechRecipeItem(SQLModel, table=True):
     material_id: int = Field(foreign_key="material.id")
     quantity: float = 0.0
 
-    technology: Optional["Technology"] = Relationship(back_populates="recipe_items")
-    material: Optional["Material"] = Relationship(back_populates="recipe_links")
+    technology: Optional["Technology"] = SQLMRelationship(back_populates="recipe_items")
+    material: Optional["Material"] = SQLMRelationship(back_populates="recipe_links")
 
 class PlayerTechnology(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
@@ -213,8 +227,8 @@ class PlayerTechnology(SQLModel, table=True):
     status: TechStatus = Field(default=TechStatus.BLUEPRINT)
     acquired_turn: int = 0
 
-    player: Optional["Player"] = Relationship(back_populates="technologies")
-    technology: Optional["Technology"] = Relationship()
+    player: Optional["Player"] = SQLMRelationship(back_populates="technologies")
+    technology: Optional["Technology"] = SQLMRelationship()
 
 # -----------------------------
 # Player inventory (materials)
@@ -227,8 +241,8 @@ class PlayerMaterial(SQLModel, table=True):
     material_id: int = Field(foreign_key="material.id", index=True)
     quantity: float = 0.0
 
-    player: Optional[Player] = Relationship(back_populates="inventory")
-    material: Optional[Material] = Relationship()
+    player: Optional["Player"] = SQLMRelationship(back_populates="inventory")
+    material: Optional["Material"] = SQLMRelationship()
 
 # -----------------------------
 # Knowledge capture
@@ -242,21 +256,8 @@ class LocationAssessment(SQLModel, table=True):
     details_text: str = ""  # full description (possibly LLM generated)
     data: Dict = Field(default_factory=dict, sa_column=Column(JSON) if JSON else None)  # structured extras
 
-    location: Optional[Location] = Relationship()
-    player: Optional[Player] = Relationship(back_populates="assessments")
-
-class Player(SQLModel, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True)
-    name: str = Field(index=True, unique=True)
-    credits: int = 0
-    created_at: datetime = Field(default_factory=datetime.utcnow)
-
-    # Relationships
-    deeds: List[Deed] = Relationship(back_populates="owner")  # defined later
-    inventory: List[PlayerMaterial] = Relationship(back_populates="player")
-    technologies: List[PlayerTechnology] = Relationship(back_populates="player")
-    assessments: List[LocationAssessment] = Relationship(back_populates="player")
-    surveys: List[PlotSurvey] = Relationship(back_populates="player")
+    location: Optional["Location"] = SQLMRelationship()
+    player: Optional["Player"] = SQLMRelationship(back_populates="assessments")
 
 # -----------------------------
 # Projects & Tasks (player guide)
@@ -267,7 +268,7 @@ class Project(SQLModel, table=True):
     name: str
     description: str = ""
 
-    tasks: List["Task"] = Relationship(back_populates="project")
+    tasks: List["Task"] = SQLMRelationship(back_populates="project")
 
 class Task(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
@@ -279,7 +280,7 @@ class Task(SQLModel, table=True):
     status: TaskStatus = Field(default=TaskStatus.UNASSIGNED)
     hidden: bool = True  # hidden until revealed by progression
 
-    project: Optional["Project"] = Relationship(back_populates="tasks")
+    project: Optional["Project"] = SQLMRelationship(back_populates="tasks")
 
     __table_args__ = (
         UniqueConstraint("project_id", "key", name="uix_task_proj_key"),
