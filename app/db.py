@@ -24,7 +24,6 @@ from sqlmodel import Relationship as SQLMRelationship
 #    from sqlalchemy import JSON  # SA>=1.4 has JSON (mapped to TEXT on SQLite)
 #except Exception:  # pragma: no cover
 #    JSON = None  # type: ignore
-JSON = None
 
 # -----------------------------
 # Enums
@@ -129,7 +128,7 @@ class Feature(SQLModel, table=True):
     name: str = ""  # e.g., "Trading Post", "Obelisk A", "North Ridge"
     description: str = ""
     discovered_turn: int = 0
-    meta: Dict = Field(default_factory=dict, sa_column=Column(JSON) if JSON else None)
+    #meta: Dict = Field(default_factory=dict, sa_column=Column(JSON) if JSON else None)
 
     location: Optional["Location"] = SQLMRelationship(back_populates="features")
     plot: Optional["Plot"] = SQLMRelationship(back_populates="feature", sa_relationship_kwargs={"uselist": False})
@@ -255,7 +254,7 @@ class LocationAssessment(SQLModel, table=True):
     created_at: datetime = Field(default_factory=datetime.utcnow)
     summary: str = ""
     details_text: str = ""  # full description (possibly LLM generated)
-    data: Dict = Field(default_factory=dict, sa_column=Column(JSON) if JSON else None)  # structured extras
+    #data: Dict = Field(default_factory=dict, sa_column=Column(JSON) if JSON else None)  # structured extras
 
     location: Optional["Location"] = SQLMRelationship()
     player: Optional["Player"] = SQLMRelationship(back_populates="assessments")
