@@ -32,3 +32,12 @@ pip install -r requirements.txt
 
 # 3) Launch
 python -m app.main --config config/config.json
+
+# creating the database
+
+# wherever you initialize the app (e.g., in MainController.__init__)
+from .db import make_engine, create_db_and_tables, get_session, seed_projects_if_empty
+engine = make_engine("sqlite:///spacegame.db", echo=False)
+create_db_and_tables(engine)
+with get_session(engine) as s:
+    seed_projects_if_empty(s)
