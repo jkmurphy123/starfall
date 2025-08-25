@@ -1,0 +1,53 @@
+{
+    "window": {
+        "width": 1024,
+        "height": 768,
+        "title": "SpaceGame — Phase 1"
+    },
+    "layout": {
+        "rows": 2,
+        "cols": 2,
+        "row_stretch": [
+            1,
+            1
+        ],
+        "col_stretch": [
+            1,
+            1
+        ]
+    },
+    "panels": [
+        {
+            "id": "nav",
+            "title": "Navigation",
+            "row": 0,
+            "col": 0,
+            "bg": "#0b1a2b",
+            "widget": "NavigationPanel"
+        },
+        {
+            "id": "scan",
+            "title": "Scanner",
+            "row": 0,
+            "col": 1,
+            "bg": "#132233",
+            "widget": "ScanPanel"
+        },
+        {
+            "id": "comms",
+            "title": "Comms",
+            "row": 1,
+            "col": 0,
+            "bg": "#14202d",
+            "widget": "CommsPanel"
+        },
+        {
+            "id": "log",
+            "title": "Log",
+            "row": 1,
+            "col": 1,
+            "bg": "#0f1822",
+            "widget": "LogPanel"
+        }
+    ]
+}
