@@ -18,12 +18,12 @@ from sqlmodel import (
 )
 from sqlmodel import Relationship as SQLMRelationship
 
-from sqlalchemy import Column, UniqueConstraint
+#from sqlalchemy import Column, UniqueConstraint
 
-try:
-    from sqlalchemy import JSON  # SA>=1.4 has JSON (mapped to TEXT on SQLite)
-except Exception:  # pragma: no cover
-    JSON = None  # type: ignore
+#try:
+#    from sqlalchemy import JSON  # SA>=1.4 has JSON (mapped to TEXT on SQLite)
+#except Exception:  # pragma: no cover
+#    JSON = None  # type: ignore
 
 # -----------------------------
 # Enums
@@ -111,9 +111,9 @@ class Location(SQLModel, table=True):
     system: Optional["StarSystem"] = SQLMRelationship(back_populates="locations")
     features: List["Feature"] = SQLMRelationship(back_populates="location")
 
-    __table_args__ = (
-        UniqueConstraint("system_id", "ordinal", name="uix_location_system_ordinal"),
-    )
+    #__table_args__ = (
+    #    UniqueConstraint("system_id", "ordinal", name="uix_location_system_ordinal"),
+    #)
 
     @property
     def display_name(self) -> str:
@@ -234,7 +234,7 @@ class PlayerTechnology(SQLModel, table=True):
 # Player inventory (materials)
 # -----------------------------
 class PlayerMaterial(SQLModel, table=True):
-    __table_args__ = (UniqueConstraint("player_id", "material_id", name="uix_player_material"),)
+    #__table_args__ = (UniqueConstraint("player_id", "material_id", name="uix_player_material"),)
 
     id: Optional[int] = Field(default=None, primary_key=True)
     player_id: int = Field(foreign_key="player.id", index=True)
@@ -282,9 +282,9 @@ class Task(SQLModel, table=True):
 
     project: Optional["Project"] = SQLMRelationship(back_populates="tasks")
 
-    __table_args__ = (
-        UniqueConstraint("project_id", "key", name="uix_task_proj_key"),
-    )
+    #__table_args__ = (
+    #    UniqueConstraint("project_id", "key", name="uix_task_proj_key"),
+    #)
 
 # -----------------------------
 # Engine / session helpers
