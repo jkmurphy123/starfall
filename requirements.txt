@@ -1,4 +1,5 @@
 PyQt5>=5.15
-# Future phases (commented out to keep Phase 1 lean/runnable):
-# sqlmodel>=0.0.14
+sqlmodel>=0.0.16
+SQLAlchemy>=2.0
+# Later phases (optional):
 # llama-cpp-python>=0.2.90

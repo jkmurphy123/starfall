@@ -11,13 +11,13 @@ from .game_state import GameState
 from .controller import EventBus, MainController
 from .widgets.nav_panel import NavigationPanel
 from .widgets.scan_panel import ScanPanel
-from .widgets.comms_panel import CommsPanel
+from .widgets.commands_panel import CommandsPanel
 from .widgets.log_panel import LogPanel
 
 WIDGET_REGISTRY: Dict[str, Type[QWidget]] = {
     "NavigationPanel": NavigationPanel,
     "ScanPanel": ScanPanel,
-    "CommsPanel": CommsPanel,
+    "CommandsPanel": CommandsPanel,
     "LogPanel": LogPanel,
 }
 
@@ -51,12 +51,29 @@ class MainWindow(QMainWindow):
         for c, s in enumerate(cfg["layout"].get("col_stretch", [1]*cols)):
             grid.setColumnStretch(c, int(s))
 
-        # Build panels
+        # Build panels + registry
+        self.widgets: Dict[str, QWidget] = {}
         for p in cfg.get("panels", []):
             clsname = p.get("widget", "LogPanel")
             PanelCls = WIDGET_REGISTRY.get(clsname, LogPanel)
-            w = PanelCls(p.get("id", "panel"), p.get("title", "Panel"), p.get("bg", "#111"), self.bus, self.controller)
+            panel_id = p.get("id", "panel")
+            w = PanelCls(panel_id, p.get("title", "Panel"), p.get("bg", "#111"), self.bus, self.controller)
+            # Allow panel to receive full per-panel config (e.g., commands menu)
+            if hasattr(w, "set_panel_config"):
+                try:
+                    w.set_panel_config(p)
+                except Exception as e:
+                    self.bus.log.emit(f"[main] set_panel_config failed for {panel_id}: {e}")
+            self.widgets[panel_id] = w
             grid.addWidget(w, int(p.get("row", 0)), int(p.get("col", 0)))
+
+        # Share widget registry (so commands can call other panels)
+        for w in self.widgets.values():
+            if hasattr(w, "set_widget_registry"):
+                try:
+                    w.set_widget_registry(self.widgets)
+                except Exception as e:
+                    self.bus.log.emit(f"[main] set_widget_registry failed: {e}")
 
         self.setCentralWidget(cw)
 

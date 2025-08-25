@@ -16,3 +16,9 @@ class NavigationPanel(BasePanelWidget):
             self.bus.log.emit(f"[nav] plotting course {direction} (stub)")
         else:
             super().keyPressEvent(e)
+
+    # ---- Exposed actions (for CommandsPanel) ----
+    def board_ship(self):
+        self.bus.log.emit("[nav] Boarding ship… (stub action)")
+        # Future: change game state, transition scenes, etc.
+        return True            

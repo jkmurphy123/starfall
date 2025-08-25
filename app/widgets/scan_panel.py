@@ -17,3 +17,8 @@ class ScanPanel(BasePanelWidget):
 
     def on_turn_changed(self, turn: int):
         self.bus.log.emit(f"[scan] passive sensors updated for turn {turn}")
+
+    # ---- Exposed actions (for CommandsPanel) ----
+    def show_location(self):
+        self.bus.log.emit("[scan] Displaying current location overview… (stub action)")
+        return True        
