@@ -1,6 +1,11 @@
+# controller.py
 from typing import Dict, Optional, Any
 from PyQt5.QtCore import QObject, pyqtSignal
 from .game_state import GameState
+
+# NEW imports
+from .db import make_engine, create_db_and_tables, get_session, seed_projects_if_empty
+from .task_service import TaskService
 
 class EventBus(QObject):
     log = pyqtSignal(str)
@@ -15,6 +20,17 @@ class MainController(QObject):
         self.bus = bus
         self.cfg = cfg
         self._widgets: Dict[str, QObject] = {}
+
+        # --- NEW: DB + Tasks wiring ---
+        db_url = cfg.get("db_url", "sqlite:///spacegame.db")
+        self.engine = make_engine(db_url=db_url, echo=bool(cfg.get("db_echo", False)))
+        create_db_and_tables(self.engine)
+
+        # Seed starter projects/tasks only if empty
+        with get_session(self.engine) as s:
+            seed_projects_if_empty(s)
+
+        self.tasks = TaskService(lambda: get_session(self.engine))
 
     # ---- Turn mgmt ----
     def advance_turn(self):

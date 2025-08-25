@@ -1,0 +1,127 @@
+--project proxima
+
+cerate a simple pytohn application of space exploration and resource gathering. It will be primarily test drivern, with AI generated imagess of planters and cretures but the navigation, combat etc it turn based and text driven.
+
+The game starts with some cash and you start at a random starbase. From that you invested in tools to ex,plore and exploit 
+
+The galaxy is organized in layers of distance. Maybe ecotrs for immediate space , quadrants, etc. Each heirachy of distance requires more fuela nd better engines to cross the distance.
+
+So you be gin by exploring local planets with a mininum distance then take profits and buy better to go farther and make bigger trades.
+
+There are different things to buy adn sell:
+Inforamtion - send probes to learn about distant system, then sell that information for cash (good for starting out since you don't travel yet). 
+Maybe the info you selling are mining rights so you can either sell or use them. Each planet has geographical lots that you can exploit or sell to otehrs but then you can't use them
+
+So a probme might find a lot with a mineral coposition . If you need those, you might mine them, if its lame, then sell it instead.
+
+Like a suvival game, you need the raw minerals to use machines to manafacture into something useful. Combining different minerals can selt them into other materials for crafting
+or selling
+
+You srtat with cash and debt. You can but limited tech and buy coponents to build proboes. Send these out and find propecity lots. You have no ship yet, so sell the infor
+until 1) your loan is paid back (you can only borrow based on actualy cash on hand. More intest requires less cash but higer risk). Loan repayment is automatic and if you default
+you cash or collateral is seized.
+
+Probes are one use, they use up their own componetsa for energy and exploration. Beginning probes can only travel in yuor current sector. Once you'made enough money yuo can buy a 
+passage to planets in local sector (no ship required). So you pick yur best lot, buy passage to ge there and purchase ming robots to harvest the minerals. 
+
+The probe report is good but not perfect, you might get lucky get getter better or worse then predicted. In addition to minerals you find alien artifact, but odds are bacsed on how 
+much the sector has been explored. 
+
+Probes use smalled versions of each engine type and are resticted in distance the smae way
+
+Probes came in 3 types: astronomical - reveal all planets and moons in a system with a rough planet/moon type (low mineral, high mineral, etc)
+Planary: sent to specif planet, moon aor asteroid. Gives precise mineral report of lots and how many are available to claim
+
+Plenats have status acording to how explored they are. Ranging from new to fully inhabited. Most planets in starting sectore have been discovered. 
+
+Technological levels
+Different starbases offer different level of technology. You begin on an outpost at level 1-3. Also affects prices, better prices on high level tech if low level starbase/outpost
+
+Combat
+
+You don't land on planets but send down machines to explore or collect reqsources. You can arm them in various ways and combat is turn based. Like pokemon, each turn you take actions
+and results are displayed until battle is over or you withdraw
+
+Space hierarcy
+
+In-System: your ship can reash any plaent using only basic impulse engines
+Sector: 1 -6 system in range with warp level 1 engines
+quadrant: 2-12 system in range with level 2
+??: 3 - 18
+??: 4-24
+etc
+
+Stats
+
+Luck - helkps with prospecting
+Science - helps with crafting
+Negotiation - helps get better prices
+
+Commands - 3 levels deep, from config file. Calls one or more mthods in the panel objects
+
+Different locations offers different command options based on a code
+	A - all locations
+	B - base only
+	S - ship only
+	
+Location - interacting with current location
+	Gambling Hall (B)
+	Commercial District (B)
+		Raw Materials Providers
+		Blueprint Dealers
+		Property Lease Brokers
+		Spacecraft Dealers
+		Technology Specialists
+		Rummage Dealers		
+	Docking Bays (B)
+		Launch Probe
+		Board Ship
+		
+Navigation (S)
+	Short Range Scanner
+	Long Range Scanner
+	Engage Impulse Engines
+	Engage Hyperdrive
+Ship Status (S)
+	Damage Report
+	Resource Status
+	
+Ships Log (A)
+	Projects and Tasks
+	Observations
+	Events
+	Recent Conversations
+
+Research (A) - lookup information
+Craft (A) - craft an asset from blueprints
+	Build Asset
+	Disassemble Asset
+Assets (A)
+	Show Materials
+	Show Ships and Probes
+	Show Technology
+	Show Finances (cash and debt, net worth of unsold lease, materials etc)
+	Show Leases (montly cost, proft and loss for each lease)
+
+-- backtory
+
+you sold all your stuff and got a 20K credit loan thinking you'd join the gold rush to the outer colonies, but you found the "colony" is just an 
+orbital outpost and your only posesion now is a lease for an apartment (free utilites and nutrient paste) and a whopping debt. But it does have a workshop,
+so while you can't afford to buy a probe to start prospecting you have just enough to buy the raw materials to build your own probe and hope the launch fees
+won't take your last credit. With ay lcuk you'll find an asteroid or patch of moon somewhere in teh system that might be worth something to somebody.
+Someday you'll have enough money to propect and harvest your own resources but for now you discover what you can.
+
+- various promts
+
+Ok, next let's start one the first widgets. First, I'd like to rename the comms widget to the "commands" widget, titled "Command Console". This
+will be the widget to handle commands. Commands are a simple menu system that goes 3 layers deep. The strucuter of the command comes from the config file
+and each command triigers a call to 1 or more methods found in the other widgets. For exmaple the command "Location" has the 
+sub-command "Docking Bays" which has the sub-sub-command "Board Ship" which calls the method board_ship() in the Navigation widget. The
+top level commands are shown as rectangle buttons along the left side of the width and hovering over the button reveals the sub-menu and clicking
+on a menu item triggers the call to appropriate widget method. 
+
+Next I want to add a simple project and task feature that will act As a guide to the player. In the database are preset projects with 
+child tasks. They are hidden at the start, but through the course of the game they will be displayed and them marked as completred and 
+hidden again. So they will have a status "Unassigned", "In Progress" and "Completed". The Log widget will have functions to change task 
+status, display active projects and tasks that are in progress and a function to show tasks completed. The display is just the name of the project and 
+indented under that is the names and brief description of the task in the order they need to be completed.

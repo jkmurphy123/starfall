@@ -39,7 +39,93 @@
             "row": 1,
             "col": 0,
             "bg": "#14202d",
-            "widget": "CommsPanel"
+            "widget": "CommandsPanel",
+            "menu": [
+                {
+                    "label": "Projects",
+                    "children": [
+                        {
+                            "label": "View",
+                            "children": [
+                                {
+                                    "label": "Show Active/In‑Progress",
+                                    "actions": [
+                                        {
+                                            "panel_id": "log",
+                                            "method": "show_active_projects"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "label": "Show Completed",
+                                    "actions": [
+                                        {
+                                            "panel_id": "log",
+                                            "method": "show_completed_tasks"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "label": "Quick Demo Updates",
+                            "children": [
+                                {
+                                    "label": "Mark Getting Started → Board Ship as In Progress",
+                                    "actions": [
+                                        {
+                                            "panel_id": "log",
+                                            "method": "set_task_status",
+                                            "args": [
+                                                "getting_started",
+                                                "board_ship",
+                                                "In Progress"
+                                            ]
+                                        }
+                                    ]
+                                },
+                                {
+                                    "label": "Mark Getting Started → Board Ship as Completed",
+                                    "actions": [
+                                        {
+                                            "panel_id": "log",
+                                            "method": "set_task_status",
+                                            "args": [
+                                                "getting_started",
+                                                "board_ship",
+                                                "Completed"
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "label": "Location",
+                    "children": [
+                        {
+                            "label": "Docking Bays",
+                            "children": [
+                                {
+                                    "label": "Board Ship",
+                                    "actions": [
+                                        {
+                                            "panel_id": "nav",
+                                            "method": "board_ship"
+                                        },
+                                        {
+                                            "panel_id": "scan",
+                                            "method": "show_location"
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
         },
         {
             "id": "log",
@@ -48,33 +134,6 @@
             "col": 1,
             "bg": "#0f1822",
             "widget": "LogPanel"
-        }
-    ],
-    "commands": [
-        {
-            "label": "Location",
-            "children": [
-                {
-                    "label": "Docking Bays",
-                    "children": [
-                        {
-                            "label": "Board Ship",
-                            "actions": [
-                                {
-                                    "widget": "nav",
-                                    "method": "board_ship",
-                                    "args": {}
-                                },
-                                {
-                                    "widget": "scan",
-                                    "method": "show_location",
-                                    "args": {}
-                                }
-                            ]
-                        }
-                    ]
-                }
-            ]
         }
     ]
 }
