@@ -18,7 +18,6 @@ from sqlmodel import (
     select,
 )
 from sqlalchemy import Column, UniqueConstraint
-from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 try:
     from sqlalchemy import JSON  # SA>=1.4 has JSON (mapped to TEXT on SQLite)
@@ -83,11 +82,11 @@ class Player(SQLModel, table=True):
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
     # Relationships
-    deeds:Mapped[List["Deed"]] = Relationship(back_populates="owner")  # defined later
-    inventory: Mapped[List["PlayerMaterial"]] = Relationship(back_populates="player")
-    technologies: Mapped[List["PlayerTechnology"]] = Relationship(back_populates="player")
-    assessments: Mapped[List["LocationAssessment"]] = Relationship(back_populates="player")
-    surveys: Mapped[List["PlotSurvey"]] = Relationship(back_populates="player")
+    deeds: List["Deed"] = Relationship(back_populates="owner")  # defined later
+    inventory: List["PlayerMaterial"] = Relationship(back_populates="player")
+    technologies: List["PlayerTechnology"] = Relationship(back_populates="player")
+    assessments: List["LocationAssessment"] = Relationship(back_populates="player")
+    surveys: List["PlotSurvey"] = Relationship(back_populates="player")
 
 class StarSystem(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
@@ -97,7 +96,7 @@ class StarSystem(SQLModel, table=True):
     z: float = 0.0
     description: str = ""
 
-    locations: Mapped[List["Location"]] = Relationship(back_populates="system")  # defined later
+    locations: List["Location"] = Relationship(back_populates="system")  # defined later
 
 class Location(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
@@ -109,7 +108,7 @@ class Location(SQLModel, table=True):
     image_path: str = ""
 
     system: Optional["StarSystem"] = Relationship(back_populates="locations")
-    features: Mapped[List["Feature"]] = Relationship(back_populates="location")
+    features: List["Feature"] = Relationship(back_populates="location")
 
     __table_args__ = (
         UniqueConstraint("system_id", "ordinal", name="uix_location_system_ordinal"),
@@ -144,8 +143,8 @@ class Plot(SQLModel, table=True):
 
     feature: Optional["Feature"] = Relationship(back_populates="plot")
     deed: Optional["Deed"] = Relationship(back_populates="plot", sa_relationship_kwargs={"uselist": False})
-    materials: Mapped[List["PlotMaterial"]] = Relationship(back_populates="plot")
-    surveys: Mapped[List["PlotSurvey"]] = Relationship(back_populates="plot")
+    materials: List["PlotMaterial"] = Relationship(back_populates="plot")
+    surveys: List["PlotSurvey"] = Relationship(back_populates="plot")
 
 class Deed(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
@@ -165,8 +164,8 @@ class Material(SQLModel, table=True):
     unit: str = "kg"
     description: str = ""
 
-    plot_links: Mapped[List["PlotMaterial"]] = Relationship(back_populates="material")
-    recipe_links: Mapped[List["TechRecipeItem"]] = Relationship(back_populates="material")
+    plot_links: List["PlotMaterial"] = Relationship(back_populates="material")
+    recipe_links: List["TechRecipeItem"] = Relationship(back_populates="material")
 
 class PlotMaterial(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
@@ -187,7 +186,7 @@ class PlotSurvey(SQLModel, table=True):
 
     plot: Optional["Plot"] = Relationship(back_populates="surveys")
     player: Optional["Player"] = Relationship(back_populates="surveys")
-    materials: Mapped[List["PlotSurveyMaterial"]] = Relationship(back_populates="survey")
+    materials: List["PlotSurveyMaterial"] = Relationship(back_populates="survey")
 
 class PlotSurveyMaterial(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
@@ -209,7 +208,7 @@ class Technology(SQLModel, table=True):
     description: str = ""
     image_path: str = ""
 
-    recipe_items: Mapped[List["TechRecipeItem"]] = Relationship(back_populates="technology")
+    recipe_items: List["TechRecipeItem"] = Relationship(back_populates="technology")
 
 class TechRecipeItem(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
@@ -268,7 +267,7 @@ class Project(SQLModel, table=True):
     name: str
     description: str = ""
 
-    tasks: Mapped[List["Task"]] = Relationship(back_populates="project")
+    tasks: List["Task"] = Relationship(back_populates="project")
 
 class Task(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
