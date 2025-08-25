@@ -81,7 +81,7 @@ class Player(SQLModel, table=True):
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
     # Relationships
-    deeds: list["Deed"] = Relationship(back_populates="owner")  # defined later
+    #deeds: list["Deed"] = Relationship(back_populates="owner")  # defined later
     inventory: list["PlayerMaterial"] = Relationship(back_populates="player")
     technologies: list["PlayerTechnology"] = Relationship(back_populates="player")
     assessments: list["LocationAssessment"] = Relationship(back_populates="player")
