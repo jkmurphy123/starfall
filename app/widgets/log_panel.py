@@ -2,7 +2,7 @@
 from typing import List
 from PyQt5.QtWidgets import QTextEdit
 from .base import BasePanelWidget
-from .db import TaskStatus  # for convenience / type safety
+from db import TaskStatus  # for convenience / type safety
 
 class LogPanel(BasePanelWidget):
     def __init__(self, panel_id, title, bg, bus, controller):
